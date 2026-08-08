@@ -1,5 +1,6 @@
 import { prisma } from '../db.js';
 import { streamCodeReview } from '../services/llmStreamService.js';
+import { parseReviewMarkdown } from '../services/reviewParser.js';
 
 // POST /api/reviews — creates a review with a stub AI response (pre-streaming version)
 export async function createReview(req, res) {
@@ -58,6 +59,8 @@ export async function streamReview(req, res) {
     console.log('STREAM DONE, fullText length:', fullText.length);
 
     if (!clientDisconnected) {
+      const { issues, suggestedCommitMsg } = parseReviewMarkdown(fullText);
+
       // Save the completed review to the DB
       const review = await prisma.review.create({
         data: {
