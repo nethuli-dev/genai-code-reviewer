@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  reviews      Review[]
+}
+
+model Review {
+  id                 Int      @id @default(autoincrement())
+  userId             Int
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sourceType         String
+  sourceRef          String?
+  diffText           String
+  reviewSummary      String?
+  issues             Json?
+  suggestedCommitMsg String?
+  createdAt          DateTime @default(now())
+
+  @@index([userId])
+}
