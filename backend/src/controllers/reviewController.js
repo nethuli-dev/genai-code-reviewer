@@ -69,8 +69,8 @@ export async function streamReview(req, res) {
           sourceRef: sourceRef || null,
           diffText,
           reviewSummary: fullText,
-          issues: [], // parsed properly in Day 3 prompt-tuning pass
-          suggestedCommitMsg: null,
+          issues, // parsed properly in Day 3 prompt-tuning pass
+          suggestedCommitMsg,
         },
       });
       console.log('REVIEW SAVED, id:', review.id);
