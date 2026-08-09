@@ -19,11 +19,12 @@ export async function login(email, password) {
 
 /**
  * Streams a code review from the backend SSE endpoint.
+ * payload: { sourceType: 'raw_diff', diffText } OR { sourceType: 'pr_link', sourceRef }
  * onToken(text) is called for each streamed chunk.
  * onDone(reviewId) is called once the stream completes successfully.
  * onError(message) is called if anything goes wrong.
  */
-export async function streamReview(diffText, { onToken, onDone, onError }) {
+export async function streamReview(payload, { onToken, onDone, onError }) {
   const token = localStorage.getItem('token');
 
   const res = await fetch(`${API_BASE}/api/reviews/stream`, {
@@ -32,10 +33,21 @@ export async function streamReview(diffText, { onToken, onDone, onError }) {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ diffText }),
+    body: JSON.stringify(payload),
   });
 
-  if (!res.ok || !res.body) {
+  if (!res.ok) {
+    // Errors from PR fetch failures return a normal JSON response, not SSE
+    try {
+      const err = await res.json();
+      onError(err.error || 'Failed to start review stream');
+    } catch {
+      onError('Failed to start review stream');
+    }
+    return;
+  }
+
+  if (!res.body) {
     onError('Failed to start review stream');
     return;
   }
