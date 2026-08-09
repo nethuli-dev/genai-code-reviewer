@@ -81,3 +81,32 @@ export async function streamReview(payload, { onToken, onDone, onError }) {
     }
   }
 }
+
+export async function listReviews() {
+  const token = localStorage.getItem('token');
+
+  const res = await fetch(`${API_BASE}/api/reviews`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to load reviews');
+  }
+
+  return res.json();
+}
+
+export async function getReview(id) {
+  const token = localStorage.getItem('token');
+
+  const res = await fetch(`${API_BASE}/api/reviews/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Failed to load review');
+  }
+
+  return res.json();
+}

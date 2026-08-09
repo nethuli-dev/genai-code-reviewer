@@ -2,7 +2,7 @@ import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { streamReview } from '../api/client';
 
-export default function StreamingOutput() {
+export default function StreamingOutput({ onDone}) {
   const [mode, setMode] = useState('diff'); // 'diff' | 'pr'
   const [diffText, setDiffText] = useState('');
   const [prUrl, setPrUrl] = useState('');
@@ -98,6 +98,16 @@ export default function StreamingOutput() {
           {status === 'streaming' && <span className="animate-pulse">▍</span>}
         </div>
       )}
+
+      {status === 'done' && onDone && (
+        <button
+          onClick={onDone}
+          className="mt-4 text-sm text-blue-600 hover:underline"
+        >
+          ← Back to Dashboard
+        </button>
+      )}
+
     </div>
   );
 }

@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
 import { login } from './api/client';
 import StreamingOutput from './components/StreamingOutput';
+import Dashboard from './pages/Dashboard';
+import ReviewDetail from './pages/ReviewDetail';
 
 export default function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [email, setEmail] = useState('test@example.com');
   const [password, setPassword] = useState('password123');
   const [loginError, setLoginError] = useState('');
+  const [view, setView] = useState('dashboard'); // 'dashboard' | 'new' | 'detail'
+  const [selectedReviewId, setSelectedReviewId] = useState(null);
 
   useEffect(() => {
     if (localStorage.getItem('token')) setLoggedIn(true);
@@ -50,5 +54,38 @@ export default function App() {
     );
   }
 
-  return <StreamingOutput />;
+  if (view === 'detail') {
+    return (
+      <ReviewDetail
+        reviewId={selectedReviewId}
+        onBack={() => setView('dashboard')}
+      />
+    );
+  }
+
+  if (view === 'new') {
+    return (
+      <div>
+        <div className="max-w-2xl mx-auto px-6 pt-6">
+          <button
+            onClick={() => setView('dashboard')}
+            className="text-sm text-blue-600 hover:underline"
+          >
+            ← Back to Dashboard
+          </button>
+        </div>
+        <StreamingOutput onDone={() => setView('dashboard')} />
+      </div>
+    );
+  }
+
+  return (
+    <Dashboard
+      onSelectReview={(id) => {
+        setSelectedReviewId(id);
+        setView('detail');
+      }}
+      onNewReview={() => setView('new')}
+    />
+  );
 }
