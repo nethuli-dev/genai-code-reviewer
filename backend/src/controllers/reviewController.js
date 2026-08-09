@@ -1,6 +1,7 @@
 import { prisma } from '../db.js';
 import { streamCodeReview } from '../services/llmStreamService.js';
 import { parseReviewMarkdown } from '../services/reviewParser.js';
+import { fetchPRDiff } from '../services/githubService.js';
 
 // POST /api/reviews — creates a review with a stub AI response (pre-streaming version)
 export async function createReview(req, res) {
@@ -28,11 +29,30 @@ export async function createReview(req, res) {
 }
 
 // POST /api/reviews/stream — SSE endpoint for streaming code review results
+// Accepts EITHER a raw diff (sourceType: 'raw_diff', diffText: '...')
+// OR a GitHub PR link (sourceType: 'pr_link', sourceRef: 'https://github.com/owner/repo/pull/123')
 export async function streamReview(req, res) {
-  const { sourceType, sourceRef, diffText } = req.body;
+  const { sourceType, sourceRef, diffText: rawDiffText } = req.body;
 
-  if (!diffText) {
-    return res.status(400).json({ error: 'diffText is required' });
+  let diffText;
+
+  // Resolve the actual diff text BEFORE opening the SSE stream, so a bad
+  // PR URL or GitHub API failure returns a normal JSON error response
+  // instead of failing mid-stream.
+  try {
+    if (sourceType === 'pr_link') {
+      if (!sourceRef) {
+        return res.status(400).json({ error: 'sourceRef (PR URL) is required when sourceType is pr_link' });
+      }
+      diffText = await fetchPRDiff(sourceRef);
+    } else {
+      if (!rawDiffText) {
+        return res.status(400).json({ error: 'diffText is required' });
+      }
+      diffText = rawDiffText;
+    }
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
   }
 
   // SSE headers - keep the connection open, tell the client to expect a stream of events
@@ -51,12 +71,10 @@ export async function streamReview(req, res) {
 
   try {
     const fullText = await streamCodeReview(diffText, (token) => {
-      console.log('GOT TOKEN:', token);
       if (!clientDisconnected) {
         res.write(`data: ${JSON.stringify({ token })}\n\n`);
       }
     });
-    console.log('STREAM DONE, fullText length:', fullText.length);
 
     if (!clientDisconnected) {
       const { issues, suggestedCommitMsg } = parseReviewMarkdown(fullText);
@@ -69,11 +87,10 @@ export async function streamReview(req, res) {
           sourceRef: sourceRef || null,
           diffText,
           reviewSummary: fullText,
-          issues, // parsed properly in Day 3 prompt-tuning pass
+          issues,
           suggestedCommitMsg,
         },
       });
-      console.log('REVIEW SAVED, id:', review.id);
 
       res.write(`data: ${JSON.stringify({ done: true, reviewId: review.id })}\n\n`);
     }
