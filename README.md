@@ -63,26 +63,30 @@ AI-powered code review tool that streams bug and style feedback live as you revi
 
 ## Project structure
 
+```
 genai-code-reviewer/
 ├── backend/
-│ ├── src/
-│ │ ├── routes/ # auth.js, review.js
-│ │ ├── controllers/ # authController.js, reviewController.js
-│ │ ├── services/ # llmStreamService.js, githubService.js, reviewParser.js
-│ │ ├── middleware/ # authMiddleware.js
-│ │ └── app.js
-│ ├── prisma/
-│ │ └── schema.prisma
-│ └── package.json
+│   ├── src/
+│   │   ├── routes/          # auth.js, review.js
+│   │   ├── controllers/     # authController.js, reviewController.js
+│   │   ├── services/        # llmStreamService.js, githubService.js, reviewParser.js
+│   │   ├── middleware/      # authMiddleware.js
+│   │   └── app.js
+│   ├── prisma/
+│   │   └── schema.prisma
+│   └── package.json
 ├── frontend/
-│ ├── src/
-│ │ ├── pages/ # Landing.jsx, AuthPage.jsx, Dashboard.jsx, ReviewDetail.jsx
-│ │ ├── components/ # Navbar.jsx, Toast.jsx, StreamingOutput.jsx, ReviewCard.jsx, IssueList.jsx
-│ │ ├── api/
-│ │ │ └── client.js
-│ │ └── App.jsx
-│ └── package.json
+│   ├── src/
+│   │   ├── pages/           # Landing.jsx, AuthPage.jsx, Dashboard.jsx, ReviewDetail.jsx
+│   │   ├── components/      # Navbar.jsx, Toast.jsx, StreamingOutput.jsx, ReviewCard.jsx, IssueList.jsx
+│   │   ├── api/
+│   │   │   └── client.js
+│   │   └── App.jsx
+│   └── package.json
 └── README.md
+```
+
+---
 
 ---
 
