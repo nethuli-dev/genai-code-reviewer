@@ -179,7 +179,7 @@ Open the URL Vite prints (usually `http://localhost:5173`).
 
 ## Author
 
-**Nethulina Tharadhanapala**
+**Nethuli Dhanapala**
 
 ---
 
