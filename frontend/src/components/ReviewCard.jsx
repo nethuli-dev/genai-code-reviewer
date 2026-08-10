@@ -1,3 +1,5 @@
+import { colors, fonts } from '../theme';
+
 export default function ReviewCard({ review, onClick }) {
   const preview = review.reviewSummary.replace(/[#*`]/g, '').slice(0, 120);
   const date = new Date(review.createdAt).toLocaleString();
@@ -7,24 +9,28 @@ export default function ReviewCard({ review, onClick }) {
   return (
     <button
       onClick={onClick}
-      className="w-full text-left border border-gray-200 rounded-lg p-4 hover:border-blue-400 hover:shadow-sm transition"
+      className="w-full text-left rounded-xl border p-4 transition hover:border-[#39C5CF]"
+      style={{ background: colors.surface, borderColor: colors.border }}
     >
       <div className="flex justify-between items-start mb-2">
-        <span className="text-xs font-medium px-2 py-0.5 rounded bg-gray-100 text-gray-600">
+        <span
+          className="text-xs font-medium px-2 py-0.5 rounded"
+          style={{ background: colors.surfaceAlt, color: colors.muted, fontFamily: fonts.mono }}
+        >
           {review.sourceType === 'pr_link' ? 'GitHub PR' : 'Pasted Diff'}
         </span>
-        <span className="text-xs text-gray-400">{date}</span>
+        <span className="text-xs" style={{ color: colors.muted }}>{date}</span>
       </div>
 
       {review.sourceRef && (
-        <p className="text-xs text-blue-600 truncate mb-1">{review.sourceRef}</p>
+        <p className="text-xs truncate mb-1" style={{ color: colors.teal }}>{review.sourceRef}</p>
       )}
 
-      <p className="text-sm text-gray-700 line-clamp-2">{preview}...</p>
+      <p className="text-sm line-clamp-2" style={{ color: colors.text }}>{preview}...</p>
 
-      <div className="flex gap-3 mt-2 text-xs text-gray-500">
-        {bugCount > 0 && <span>🐛 {bugCount} bug{bugCount !== 1 ? 's' : ''}</span>}
-        {styleCount > 0 && <span>✏️ {styleCount} style note{styleCount !== 1 ? 's' : ''}</span>}
+      <div className="flex gap-3 mt-2 text-xs" style={{ color: colors.muted }}>
+        {bugCount > 0 && <span style={{ color: colors.red }}>🐛 {bugCount} bug{bugCount !== 1 ? 's' : ''}</span>}
+        {styleCount > 0 && <span style={{ color: colors.teal }}>✏️ {styleCount} style note{styleCount !== 1 ? 's' : ''}</span>}
       </div>
     </button>
   );

@@ -1,3 +1,5 @@
+import { colors, fonts } from '../theme';
+
 export default function IssueList({ issues }) {
   if (!issues || issues.length === 0) return null;
 
@@ -5,13 +7,15 @@ export default function IssueList({ issues }) {
   const style = issues.filter((i) => i.severity === 'style');
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {bugs.length > 0 && (
         <div>
-          <h4 className="text-sm font-semibold text-red-700 mb-1">Bugs</h4>
-          <ul className="space-y-1">
+          <h4 className="text-sm font-semibold mb-2" style={{ color: colors.red, fontFamily: fonts.display }}>
+            Bugs
+          </h4>
+          <ul className="space-y-1.5">
             {bugs.map((issue, i) => (
-              <li key={i} className="text-sm text-gray-700 flex gap-2">
+              <li key={i} className="text-sm flex gap-2" style={{ color: colors.text }}>
                 <span>🐛</span>
                 <span>{issue.comment}</span>
               </li>
@@ -22,10 +26,12 @@ export default function IssueList({ issues }) {
 
       {style.length > 0 && (
         <div>
-          <h4 className="text-sm font-semibold text-blue-700 mb-1">Style Notes</h4>
-          <ul className="space-y-1">
+          <h4 className="text-sm font-semibold mb-2" style={{ color: colors.teal, fontFamily: fonts.display }}>
+            Style Notes
+          </h4>
+          <ul className="space-y-1.5">
             {style.map((issue, i) => (
-              <li key={i} className="text-sm text-gray-700 flex gap-2">
+              <li key={i} className="text-sm flex gap-2" style={{ color: colors.text }}>
                 <span>✏️</span>
                 <span>{issue.comment}</span>
               </li>

@@ -1,91 +1,99 @@
 import { useState, useEffect } from 'react';
-import { login } from './api/client';
-import StreamingOutput from './components/StreamingOutput';
+import Navbar from './components/Navbar';
+import Toast from './components/Toast';
+import Landing from './pages/Landing';
+import AuthPage from './pages/AuthPage';
 import Dashboard from './pages/Dashboard';
 import ReviewDetail from './pages/ReviewDetail';
+import StreamingOutput from './components/StreamingOutput';
+import { colors } from './theme';
 
 export default function App() {
   const [loggedIn, setLoggedIn] = useState(false);
-  const [email, setEmail] = useState('test@example.com');
-  const [password, setPassword] = useState('password123');
-  const [loginError, setLoginError] = useState('');
-  const [view, setView] = useState('dashboard'); // 'dashboard' | 'new' | 'detail'
+  const [view, setView] = useState('landing'); // landing | auth | dashboard | new | detail
+  const [authMode, setAuthMode] = useState('signup');
   const [selectedReviewId, setSelectedReviewId] = useState(null);
+  const [toasts, setToasts] = useState([]);
 
   useEffect(() => {
-    if (localStorage.getItem('token')) setLoggedIn(true);
+    if (localStorage.getItem('token')) {
+      setLoggedIn(true);
+      setView('dashboard');
+    }
   }, []);
 
-  async function handleLogin() {
-    try {
-      await login(email, password);
-      setLoggedIn(true);
-      setLoginError('');
-    } catch (err) {
-      setLoginError(err.message);
-    }
+  function addToast(message, type = 'success') {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 4000);
   }
 
-  if (!loggedIn) {
-    return (
-      <div className="max-w-sm mx-auto mt-20 p-6 border border-gray-200 rounded-lg">
-        <h2 className="text-xl font-bold mb-4">Log In</h2>
-        <input
-          className="w-full border rounded p-2 mb-2"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
-        />
-        <input
-          className="w-full border rounded p-2 mb-2"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-        />
-        <button
-          onClick={handleLogin}
-          className="w-full bg-blue-600 text-white rounded p-2"
-        >
-          Log In
-        </button>
-        {loginError && <p className="text-red-600 mt-2">{loginError}</p>}
-      </div>
+  function handleAuthed(mode) {
+    setLoggedIn(true);
+    setView('dashboard');
+    addToast(
+      mode === 'signup' ? 'Welcome to CodeHunk — account created.' : 'Welcome back to CodeHunk.',
+      'success'
     );
   }
 
-  if (view === 'detail') {
-    return (
-      <ReviewDetail
-        reviewId={selectedReviewId}
-        onBack={() => setView('dashboard')}
-      />
-    );
-  }
-
-  if (view === 'new') {
-    return (
-      <div>
-        <div className="max-w-2xl mx-auto px-6 pt-6">
-          <button
-            onClick={() => setView('dashboard')}
-            className="text-sm text-blue-600 hover:underline"
-          >
-            ← Back to Dashboard
-          </button>
-        </div>
-        <StreamingOutput onDone={() => setView('dashboard')} />
-      </div>
-    );
+  function handleSignOut() {
+    localStorage.removeItem('token');
+    setLoggedIn(false);
+    setView('landing');
   }
 
   return (
-    <Dashboard
-      onSelectReview={(id) => {
-        setSelectedReviewId(id);
-        setView('detail');
-      }}
-      onNewReview={() => setView('new')}
-    />
+    <div className="min-h-screen" style={{ background: colors.bg }}>
+      <Navbar
+        loggedIn={loggedIn}
+        active={view === 'landing' ? 'home' : view === 'dashboard' ? 'reviews' : null}
+        onHome={() => setView('landing')}
+        onReviews={() => setView('dashboard')}
+        onNew={() => setView('new')}
+        onSignIn={() => {
+          setAuthMode('signin');
+          setView('auth');
+        }}
+        onSignOut={handleSignOut}
+      />
+
+      <Toast toasts={toasts} />
+
+      {view === 'landing' && (
+        <Landing
+          onPrimaryAction={() => {
+            if (loggedIn) {
+              setView('new');
+            } else {
+              setAuthMode('signup');
+              setView('auth');
+            }
+          }}
+        />
+      )}
+
+      {view === 'auth' && <AuthPage initialMode={authMode} onAuthed={handleAuthed} />}
+
+      {view === 'dashboard' && (
+        <Dashboard
+          onSelectReview={(id) => {
+            setSelectedReviewId(id);
+            setView('detail');
+          }}
+          onNewReview={() => setView('new')}
+        />
+      )}
+
+      {view === 'new' && (
+        <StreamingOutput
+          onComplete={() => addToast('Reviewing complete — results saved.', 'success')}
+        />
+      )}
+
+      {view === 'detail' && <ReviewDetail reviewId={selectedReviewId} />}
+    </div>
   );
 }

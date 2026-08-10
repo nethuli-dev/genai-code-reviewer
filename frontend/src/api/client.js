@@ -17,6 +17,23 @@ export async function login(email, password) {
   return data;
 }
 
+export async function signup(email, password) {
+  const res = await fetch(`${API_BASE}/api/auth/signup`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || 'Signup failed');
+  }
+
+  const data = await res.json();
+  localStorage.setItem('token', data.token);
+  return data;
+}
+
 /**
  * Streams a code review from the backend SSE endpoint.
  * payload: { sourceType: 'raw_diff', diffText } OR { sourceType: 'pr_link', sourceRef }
