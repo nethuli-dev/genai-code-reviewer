@@ -4,6 +4,7 @@ AI-powered code review tool that streams bug and style feedback live as you revi
 
 ![CodeHunk demo](./docs/demo1.jpeg)
 ![CodeHunk demo](./docs/demo2.jpeg)
+
 <!-- Record a short screen capture of submitting a review and streaming in real time, then drop it at docs/demo.gif -->
 
 ---
@@ -19,29 +20,21 @@ AI-powered code review tool that streams bug and style feedback live as you revi
 
 ## Tech stack
 
-| Layer | Choice |
-|---|---|
-| Frontend | React (Vite) + Tailwind CSS v4 |
-| Backend | Node.js + Express |
-| Database | PostgreSQL + Prisma ORM |
-| Auth | JWT |
-| LLM | Groq (Llama 3.3 70B), streaming via SSE |
+| Layer              | Choice                                          |
+| ------------------ | ----------------------------------------------- |
+| Frontend           | React (Vite) + Tailwind CSS v4                  |
+| Backend            | Node.js + Express                               |
+| Database           | PostgreSQL + Prisma ORM                         |
+| Auth               | JWT                                             |
+| LLM                | Groq (Llama 3.3 70B), streaming via SSE         |
 | GitHub integration | GitHub REST API (public repos, unauthenticated) |
-| Deployment | Render (backend + Postgres) + Vercel (frontend) |
+| Deployment         | Render (backend + Postgres) + Vercel (frontend) |
 
 ---
 
 ## Architecture
-┌─────────────┐ SSE stream ┌──────────────┐ streaming ┌──────────────┐
-│ React │ ◄─────────────► │ Express API │ ◄────────────► │ Groq API │
-│ (Vercel) │ │ (Render) │ │ │
-└─────────────┘ └──────┬───────┘ └──────────────┘
-│
-▼
-┌──────────────┐ ┌──────────────┐
-│ PostgreSQL │ │ GitHub API │
-│ (Render) │ │ (public PRs) │
-└──────────────┘ └──────────────┘
+
+![CodeHunk demo](./docs/demo3.jpeg)
 
 **Why SSE instead of WebSockets:** the streaming is one-directional (server → client), so SSE gives real-time delivery without the added complexity of a bidirectional connection this use case doesn't need.
 
@@ -69,6 +62,7 @@ AI-powered code review tool that streams bug and style feedback live as you revi
 ---
 
 ## Project structure
+
 genai-code-reviewer/
 ├── backend/
 │ ├── src/
