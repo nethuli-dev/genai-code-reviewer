@@ -1,8 +1,9 @@
-# CodeHunk
+# CodeHunk - A GenAI Code Review SaaS Tool
 
 AI-powered code review tool that streams bug and style feedback live as you review a diff or a GitHub pull request — built as a full-stack SaaS-style application with authentication, multi-user data isolation, and persistent review history.
 
-![CodeHunk demo](./docs/demo.gif)
+![CodeHunk demo](./docs/demo1.jpeg)
+![CodeHunk demo](./docs/demo2.jpeg)
 <!-- Record a short screen capture of submitting a review and streaming in real time, then drop it at docs/demo.gif -->
 
 ---
