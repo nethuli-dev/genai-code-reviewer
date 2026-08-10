@@ -34,7 +34,7 @@ AI-powered code review tool that streams bug and style feedback live as you revi
 
 ## Architecture
 
-![CodeHunk demo](./docs/demo3.jpeg)
+![CodeHunk demo](./docs/demo3.png)
 
 **Why SSE instead of WebSockets:** the streaming is one-directional (server → client), so SSE gives real-time delivery without the added complexity of a bidirectional connection this use case doesn't need.
 
