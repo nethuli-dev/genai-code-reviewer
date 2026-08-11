@@ -28,7 +28,6 @@ AI-powered code review tool that streams bug and style feedback live as you revi
 | Auth               | JWT                                             |
 | LLM                | Groq (Llama 3.3 70B), streaming via SSE         |
 | GitHub integration | GitHub REST API (public repos, unauthenticated) |
-| Deployment         | Render (backend + Postgres) + Vercel (frontend) |
 
 ---
 
